@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 import fitz 
 
-st.secrets["openai"]["api_key"]
+api_key=st.secrets["openai"]["api_key"]
 
 client = OpenAI(api_key=api_key)
 
