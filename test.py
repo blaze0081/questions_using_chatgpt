@@ -28,7 +28,7 @@ def query_document(question, document_text):
 
 def main():
     st.set_page_config(page_title="Chat PDF")
-    st.header("Chat with PDF using Gemini💁")
+    st.header("Generate Questions with PDF")
 
     toughness = st.selectbox(
         "Toughness of questions",
