@@ -1,12 +1,8 @@
 import streamlit as st
 from openai import OpenAI
-import fitz  # PyMuPDF
-import toml
+import fitz 
 
-
-# Load configuration from config.toml
-config = toml.load("config.toml")
-api_key = config["openai"]["api_key"]
+st.secrets["openai"]["api_key"]
 
 client = OpenAI(api_key=api_key)
 
