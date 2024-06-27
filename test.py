@@ -39,7 +39,7 @@ def main():
         "Language to generate in",
         ("English", "Hindi")
     )
-    number = st.number_input("Insert a number of questions", 0, 50)
+    number = st.number_input("Insert a number of questions", 1, 50)
 
     question_type = st.selectbox(
         "Type of questions",
