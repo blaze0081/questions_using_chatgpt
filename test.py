@@ -7,6 +7,8 @@ api_key=st.secrets["openai"]["api_key"]
 client = OpenAI(api_key=api_key)
 expected_password = st.secrets["login"]["password"]
 
+querry_context = ""
+
 def extract_text_from_pdf(pdf_file):
     document = fitz.open(stream=pdf_file.read(), filetype="pdf")
     text = ""
@@ -47,12 +49,13 @@ def main():
     )
 
     user_question = f"Generate {number} questions to ask students in examinations in {language} of {question_type} with difficulty {toughness} from the content of this document and list their answers after listing all the questions."
-
     # Password input in the sidebar
     password = st.sidebar.text_input("Enter password", type="password")
 
     if password == expected_password:
         uploaded_file = st.sidebar.file_uploader("Choose a PDF file", type=["pdf"])
+        topic = st.sidebar.text_input("Enter the topic for questions instead.")
+        user_question_new = f"Generate {number} questions to ask students in examinations in {language} of {question_type} with difficulty {toughness} from the topic {topic} and list their answers after listing all the questions."
 
         if uploaded_file is not None:
             st.sidebar.write("Document uploaded successfully!")
@@ -66,7 +69,14 @@ def main():
                     st.subheader("Generated Questions and Answers")
                     st.write(answer)
         else:
-            st.sidebar.write("Please upload a PDF document.")
+            if topic is not None: 
+                if st.button("Process"):
+                    with st.spinner("Querying the document..."):
+                        answer = query_document(user_question_new, querry_context)
+                        st.subheader("Generated Questions and Answers")
+                        st.write(answer)
+
+                
     else:
         st.sidebar.write("Please enter the correct password.")
 
