@@ -5,7 +5,9 @@ import fitz
 api_key=st.secrets["openai"]["api_key"]
 
 client = OpenAI(api_key=api_key)
-expected_password = st.secrets["login"]["password"]
+
+# Expected password (for simplicity, it's hardcoded here)
+expected_password = config["login"]["password"]
 
 querry_context = ""
 
@@ -27,6 +29,24 @@ def query_document(question, document_text):
         ]
     )
     return response.choices[0].message.content
+
+def create_pdf(text):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    lines = text.split("\n")
+    y = height - 40
+    for line in lines:
+        p.drawString(40, y, line)
+        y -= 15
+        if y < 40:
+            p.showPage()
+            y = height - 40
+
+    p.save()
+    buffer.seek(0)
+    return buffer
 
 def main():
     st.set_page_config(page_title="Chat PDF")
@@ -68,15 +88,30 @@ def main():
                     answer = query_document(user_question, document_text)
                     st.subheader("Generated Questions and Answers")
                     st.write(answer)
+
+                    pdf = create_pdf(answer)
+                    st.download_button(
+                        label="Download PDF",
+                        data=pdf,
+                        file_name="questions_and_answers.pdf",
+                        mime="application/pdf"
+                    )
         else:
-            if topic is not None: 
+            if topic:
                 if st.button("Process"):
                     with st.spinner("Querying the document..."):
                         answer = query_document(user_question_new, querry_context)
                         st.subheader("Generated Questions and Answers")
                         st.write(answer)
 
-                
+                        pdf = create_pdf(answer)
+                        st.download_button(
+                            label="Download PDF",
+                            data=pdf,
+                            file_name="questions_and_answers.pdf",
+                            mime="application/pdf"
+                        )
+
     else:
         st.sidebar.write("Please enter the correct password.")
 
