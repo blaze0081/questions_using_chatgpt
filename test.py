@@ -11,8 +11,7 @@ api_key=st.secrets["openai"]["api_key"]
 client = OpenAI(api_key=api_key)
 
 # Expected password (for simplicity, it's hardcoded here)
-expected_password = config["login"]["password"]
-
+expected_password = st.secrets["login"]["password"]
 querry_context = ""
 
 def extract_text_from_pdf(pdf_file):
