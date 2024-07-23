@@ -1,6 +1,10 @@
 import streamlit as st
 from openai import OpenAI
 import fitz 
+import toml
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 api_key=st.secrets["openai"]["api_key"]
 
