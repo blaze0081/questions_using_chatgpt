@@ -1,10 +1,11 @@
 import streamlit as st
 from openai import OpenAI
-import fitz 
+import fitz  # PyMuPDF
 import toml
+from io import BytesIO
+from docx import Document
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from io import BytesIO
 
 api_key=st.secrets["openai"]["api_key"]
 
@@ -51,6 +52,16 @@ def create_pdf(text):
     buffer.seek(0)
     return buffer
 
+def create_word_doc(text):
+    doc = Document()
+    lines = text.split("\n")
+    for line in lines:
+        doc.add_paragraph(line)
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer
+
 def main():
     st.set_page_config(page_title="Chat PDF")
     st.header("Generate Questions")
@@ -92,6 +103,14 @@ def main():
                     st.subheader("Generated Questions and Answers")
                     st.write(answer)
 
+                    word_doc = create_word_doc(answer)
+                    st.download_button(
+                        label="Download Word Document",
+                        data=word_doc,
+                        file_name="questions_and_answers.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+
                     pdf = create_pdf(answer)
                     st.download_button(
                         label="Download PDF",
@@ -106,6 +125,14 @@ def main():
                         answer = query_document(user_question_new, querry_context)
                         st.subheader("Generated Questions and Answers")
                         st.write(answer)
+
+                        word_doc = create_word_doc(answer)
+                        st.download_button(
+                            label="Download Word Document",
+                            data=word_doc,
+                            file_name="questions_and_answers.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        )
 
                         pdf = create_pdf(answer)
                         st.download_button(
